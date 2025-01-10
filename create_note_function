@@ -1,0 +1,52 @@
+from datetime import datetime, timedelta
+
+current_datetime = datetime.now()
+notes=[] # пустой список для заметок
+
+def create_note():# ф-ция создания заметок
+    while True:
+            username=input('введите имя пользователя: ') #ввод имени пользователя
+            title=input('введите заголовок заметки: ')
+            content=input('введите пункты заметки (пункты вводить через запятую): ')
+            status=input('введите статус заметки: ')
+            created_date=current_datetime.date()
+            #time=int(input('количество дней на выполнение заметки: '))
+            date_input = input('Введите дату (дд-мм-гггг): ')
+
+            while True:# Преобразуем введённую дату в объект datetime
+                try:
+                    input_date = datetime.strptime(date_input, '%d-%m-%Y').date()  # Извлекаем только дату
+                    break  # Ввод корректен, выходим из цикла
+                except ValueError:
+                    print("Ошибка: Неправильный формат даты. Пожалуйста, используйте 'дд-мм-гггг'.")
+
+            issue_date = input_date#+ timedelta(days=time)
+            note = { #наполнение списка заметокк
+                'имя': username,
+                'заголовок': title,
+                'пункты': content,
+                'статус': status,
+                'дата создания заметки': created_date.strftime('%d-%m-%Y'),
+                'срок выполнения заметки': issue_date.strftime('%d-%m-%Y')
+            }
+            notes.append(note) # добавления значений в заметки
+            add = input('создать еще одну заметку? (да\нет) ')
+            if add == 'да':
+                continue
+            elif add == 'нет' or add == '':
+                print('не создаем больше')
+                break
+            else:
+                print('ввод неверный, введите еще раз')
+                continue
+
+def show_note(): # ф-ция вывода списка заметок
+    print("ваши заметки:")
+    for note in notes: #вывод всех получившихся заметок
+        print(f"Имя: {note['имя']}, Заголовок: {note['заголовок']}, Пункты: {note['пункты']}, "
+            f"Статус: {note['статус']}, Дата создания: {note['дата создания заметки']}, "
+            f"Срок выполнения до: {note['срок выполнения заметки']}")
+
+
+create_note()
+show_note()
