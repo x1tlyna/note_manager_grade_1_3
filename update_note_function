@@ -1,0 +1,91 @@
+from datetime import datetime
+
+
+def create_note():
+    notes = []
+    while True:
+        username = input('Введите имя пользователя: ')  # ввод имени пользователя
+        title = input('Введите заголовок заметки: ')
+        content = input('Введите пункт заметки : ')
+        status = input('Введите статус заметки: ')
+        created_date = datetime.now().strftime('%d-%m-%Y')
+
+        while True:  # Преобразуем введённую дату в объект datetime
+            date_input = input('Введите дату (дд-мм-гггг): ')
+            try:
+                issue_date = datetime.strptime(date_input, '%d-%m-%Y').strftime('%d-%m-%Y')  # Извлекаем только дату
+                break  # Ввод корректен, выходим из цикла
+            except ValueError:
+                print("Ошибка: Неправильный формат даты. Пожалуйста, используйте 'дд-мм-гггг'.")
+
+        note = {  # создаем словарь с ключами
+            'имя пользователя': username,
+            'заголовок': title,
+            'пункт заметки': content,
+            'статус заметки': status,
+            'дата создания заметки': created_date,
+            'срок выполнения заметки': issue_date
+        }
+        notes.append(note)  # добавляем словарь в список
+
+        stop = input('Создать еще одну заметку? (да/нет): ').strip()
+        if stop.lower() != 'да':  # проверка ввода да в виде да или ДА
+            break
+    return notes
+
+def choose_change(notes):
+    avaibale_keys = set()  # создаем переменную для нахождения доступных ключей
+    for note in notes:
+        avaibale_keys.update(note.keys())
+    print('доступные поля для изменеия: ', avaibale_keys)
+    while True:
+        key = input('введите поле которое хотите изменить: ')
+        if key not in avaibale_keys:  # осуществляем проверку того что введенный ключ есть в нашем списке
+            print(f'вы ввели недопустимое значение {key}')
+            continue
+        break
+
+    avaibale_values = [note[key] for note in notes if key in note]  # находим значение выбранного ключа
+    print('доступные значения для изменения: ', avaibale_values)
+    while True:
+        value = input('введите значение которое хотите изменить: ')
+        if value not in avaibale_values:  # проверка того что выбранное значение соответствует значению в списке
+            print(f'вы ввели недопустимое значение {value}')
+            continue
+        break
+    while True:
+        if key in ['дата создания заметки', 'срок выполнения заметки']:  # запускаем проверку корректного ввода даты
+            new_value_input = input(f'на какое значение меняем {value}: ', )
+            try:
+                new_value = datetime.strptime(new_value_input, '%d-%m-%Y').strftime('%d-%m-%Y')  # Извлекаем только дату
+                break
+            except ValueError:
+                print("Ошибка: Неправильный формат даты. Пожалуйста, используйте 'дд-мм-гггг'.")
+                continue
+        else:
+            new_value = input(f'на какое значение меняем {value}:', )
+        break
+    return key, value, new_value
+
+def searching(notes, key, value):  # ф-ция нахождения индекса заметки, которую мы хотим поменять
+    while True:
+        for index, notice in enumerate(notes):
+            if notice.get(key) == value:
+                return index
+            else:
+                print('значение не найдено')
+            continue
+
+def update_note(notes, index, key, new_value):
+    new_notes = [notice.copy() for notice in notes]  # создаем дубликат списка для сохранения оригинала
+    if key in new_notes[index]:  # проверка ключа в заметке по индексу
+        new_notes[index][key] = new_value
+    return new_notes  # возвращаем новый список с внесенным изменением
+
+notes = create_note()
+print(notes)
+key, value, new_value = choose_change(notes)
+index = searching(notes, key, value)
+new_notes = update_note(notes, index, key, new_value)
+
+
