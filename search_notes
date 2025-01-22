@@ -1,0 +1,31 @@
+def search_notes(notes, keyword=None, status=None):
+    searched_notes = []
+    print(keyword,status)
+    if status is not None and keyword is None:
+        for note in notes:
+            if status.lower() == note["status"].lower():
+                searched_notes.append(note)
+
+    if keyword is not None and status is None:
+        for note in notes:
+            if any(keyword.lower() in value.lower() for key, value in note.items() if key.lower() in note.keys()):
+                # print('зашел в кей')
+                searched_notes.append(note)
+                # print('нашел ', note)
+    if status is not None and keyword is not None:
+        for note in notes:
+            if status.lower() == note["status"].lower() or any(keyword.lower() in value.lower() for key, value in note.items() if key.lower() in note.keys()):
+                searched_notes.append(note)
+    if searched_notes == []:
+        searched_notes = 'заметка не найдена'
+    return searched_notes
+
+
+notes = [    {'username': 'Алексей', 'title': 'Список покупок', 'content': 'Купить продукты на неделю', 'status': 'новая', 'created_date': '27-11-2024', 'issue_date': '30-11-2024'},
+    {'username': 'Мария', 'title': 'Учеба', 'content': 'Подготовиться к экзамену', 'status': 'в процессе', 'created_date': '25-11-2024', 'issue_date': '01-12-2024'},
+    {'username': 'Иван', 'title': 'План работы', 'content': 'Завершить проект', 'status': 'выполнено', 'created_date': '20-11-2024', 'issue_date': '26-11-2024'}
+ ]
+
+keyword = input('Введите ключевое слово (или нажмите ентер)',) or None
+status = input('Введите статус (или нажмите ентер)',) or None
+print(search_notes(notes, keyword, status))
