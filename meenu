@@ -1,113 +1,124 @@
 from datetime import datetime, timedelta
 
+def create_notes(note_number,notes):
+    number = note_number + 1
+    username = input('Введите имя пользователя: ')  # ввод имени пользователя
+    title = input('Введите заголовок заметки: ')
+    content = input('Введите пункт заметки : ')
+    status = input('Введите статус заметки: ')
+    created_date = datetime.now().strftime('%d-%m-%Y')
 
-def create_ntoes(note_number, notes):
-    while True:
-        number = note_number + 1
-        username = input('Введите имя пользователя: ')  # ввод имени пользователя
-        title = input('Введите заголовок заметки: ')
-        content = input('Введите пункт заметки : ')
-        status = input('Введите статус заметки: ')
-        created_date = datetime.now().strftime('%d-%m-%Y')
+    while True:  # Преобразуем введённую дату в объект datetime
+        date_input = input('Введите дату (дд-мм-гггг): ')
+        try:
+            issue_date = datetime.strptime(date_input, '%d-%m-%Y').strftime('%d-%m-%Y')  # Извлекаем только дату
+            break  # Ввод корректен, выходим из цикла
+        except ValueError:
+            print("Ошибка: Неправильный формат даты. Пожалуйста, используйте 'дд-мм-гггг'.")
 
-        while True:  # Преобразуем введённую дату в объект datetime
-            date_input = input('Введите дату (дд-мм-гггг): ')
-            try:
-                issue_date = datetime.strptime(date_input, '%d-%m-%Y').strftime('%d-%m-%Y')  # Извлекаем только дату
-                break  # Ввод корректен, выходим из цикла
-            except ValueError:
-                print("Ошибка: Неправильный формат даты. Пожалуйста, используйте 'дд-мм-гггг'.")
-
-        note = {  # создаем словарь с ключами
-            'номер заметки': number,
-            'имя': username,
-            'заголовок': title,
-            'пункт заметки': content,
-            'статус': status,
-            'дата создания заметки': created_date,
-            'срок выполнения заметки': issue_date
+    note = {  # создаем словарь с ключами
+        'номер заметки': number,
+        'имя': username,
+        'заголовок': title,
+        'пункт заметки': content,
+        'статус': status,
+        'дата создания заметки': created_date,
+        'срок выполнения заметки': issue_date
         }
-        notes.append(note)  # добавляем словарь в список
-
-        stop = input('Создать еще одну заметку? (да/нет): ').strip()
-        if stop.lower() != 'да':  # проверка ввода
-            break
+    notes.append(note)  # добавляем словарь в список
     return notes, number
 
-
-def show_notes(notes,new_notes = None):
-    choose=input('какой список заметок изменить (оригинальный, измененный)? ',)
-    if new_notes is not None and choose =='измененный':
-        notes=new_notes
+def show_notes(notes):
     print("ваши заметки:")
     for note in notes:  # вывод всех получившихся заметок
         print(
             f" Номер заметки: {note['номер заметки']}\n Имя: {note['имя']}\n Заголовок: {note['заголовок']}\n "
-            f"Пункт заметки: {note['пункт заметки']}\n  Статус: {note['статус']}\n "
+            f"Пункт заметки: {note['пункт заметки']}\n Статус: {note['статус']}\n "
             f"Дата создания: {note['дата создания заметки']}\n " 
             f"Срок выполнения до: {note['срок выполнения заметки']}\n ________________________")
 
-
-def update_note(notes,new_notes = None):
+def update_note(notes):
     while True:
-        choose=input('какой список заметок изменить (оригинальный, измененный)? ',)
-        if choose.lower()=='измененный' and new_notes is not None:
-            notes=new_notes
+        id_key='номер заметки'
+        value_id=int(input('введите номер заметки которую хотите изменить: '))
         key = input('введите поле заметки которое хотите поменять: ', )
-        value = input('введите значение которое хотите заменить: ', )
         new_value = input('введите новое значение: ', )
-        # Флаг для проверки, было ли обновление
-        found = False
-        for index, notice in enumerate(notes):
-            if notice.get(key) == value.lower():  # Сравнение по ключу и значению
-                print('Обновляем заметку с индексом:', index)
-                new_notes = [notice.copy() for notice in notes]  # Создаем дубликат списка
-                new_notes[index][key] = new_value  # Обновляем значение
-                found = True
-                break  # Выходим из цикла при успешном обновлении
+        new_notes = [notice.copy() for notice in notes]  # создаем дубликат списка для сохранения оригинала
+        for index, notice in enumerate(new_notes):
+            # Проверяем, если номер заметки совпадает с требуемым
+            if notice[id_key] == value_id:
+                new_notes[index][key] = new_value  # Обновляем значение имени
+                break  # Выходим из цикла после изменения
 
-        if found:
-            return new_notes  # Возвращаем обновленный список
-        else:
-            print('Значение не найдено, попробуйте снова.')
+        return new_notes  # Возвращаем обновленный список
 
+def delete_note(notes):
+    delete_number = int(input('введите номер заметки, которую хотите удалить: ', ))
+    new_notes = notes
+    for note in notes:
+        if delete_number == note['номер заметки']:
+            new_notes.remove(note)
+    return new_notes
 
-def delete_note(notes, new_notes):
-    choose=input('какой список заметок изменить (оригинальный, измененный)? ',)
-    if choose.lower() == 'оригинальный':
-        print(notes)
-        delete_number = int(input('введите номер заметки, которую хотите удалить: ', ))
-        new_notes = notes
+def search_notes(notes):
+    searched_notes = []
+    keyword = input('Введите ключевое слово (или нажмите ентер)', ) or None
+    status = input('Введите статус (или нажмите ентер)', ) or None
+    print(keyword,status)
+    if status is not None and keyword is None:
         for note in notes:
-            if delete_number == note['номер заметки']:
-                print('ya popal kuda hotel')
-                new_notes.remove(note)
-                print(new_notes)
-        return new_notes
+            if status.lower() == note["status"].lower():
+                searched_notes.append(note)
 
+    if keyword is not None and status is None:
+        for note in notes:
+            if any(keyword.lower() in value.lower() for key, value in note.items() if key.lower() in note.keys()):
+                # print('зашел в кей')
+                searched_notes.append(note)
+                # print('нашел ', note)
+    if status is not None and keyword is not None:
+        for note in notes:
+            if status.lower() == note["status"].lower() or any(keyword.lower() in value.lower() for key, value in note.items() if key.lower() in note.keys()):
+                searched_notes.append(note)
+    if searched_notes == []:
+        searched_notes = 'заметка не найдена'
+    return searched_notes
 
-# def search_notes():
-#   print(a)
 def menu():
+    note_number = 0
+    notes=[]
     while True:
         print('меню 1 - создать заметку\n 2 - изменить заметку \n 3 - удалить заметку\n 4 - показать заметки\n 5 - выйти из меню')
-        choose=int(input('выбор меню ', ))
-        notes = [{'номер заметки':1,'имя':'Алексей', 'заголовок':'Список покупок', 'пункт заметки':'Купить продукты на неделю', 'статус':'новая', 'дата создания заметки':'27-11-2024','срок выполнения заметки':'30-11-2024' },
-                {'номер заметки':2,'имя':'Мария', 'заголовок':'Учеба', 'пункт заметки':'Подготовка к экзамену', 'статус':'в процессе', 'дата создания заметки':'25-11-2024','срок выполнения заметки':'01-12-2024'},
-                {'номер заметки':3,'имя':'Иван', 'заголовок':'План работы', 'пункт заметки':'Завершить проект', 'статус':'выполнено', 'дата создания заметки':'20-11-2024','срок выполнения заметки':'26-11-2024'}]
-        note_number = 0
-        new_notes=[{'номер заметки':4,'имя':'Саня', 'заголовок':'Список покупок', 'пункт заметки':'Купить продукты на неделю', 'статус':'новая', 'дата создания заметки':'27-11-2024','срок выполнения заметки':'30-11-2024' },
-                {'номер заметки':5,'имя':'Катя', 'заголовок':'Учеба', 'пункт заметки':'Подготовка к экзамену', 'статус':'в процессе', 'дата создания заметки':'25-11-2024','срок выполнения заметки':'01-12-2024'},
-                {'номер заметки':6,'имя':'Антон', 'заголовок':'План работы', 'пункт заметки':'Завершить проект', 'статус':'выполнено', 'дата создания заметки':'20-11-2024','срок выполнения заметки':'26-11-2024'}]
+        choose = int(input('выбор меню ', ))
+
         if choose == 1:
-            notes, note_number = create_ntoes(note_number, notes)
+            notes, note_number = create_notes(note_number,notes)
         if choose == 2:
-            new_notes = update_note(notes,new_notes)
+            choose_update = input('какой список используем? (1 - стандарт, 2 - измена) ', )
+            if choose_update == '1':
+                new_notes=update_note(notes)
+            if choose_update == '2':
+                new_notes = update_note(new_notes)
+            print(new_notes)
         if choose == 3:
-            new_notes = delete_note(notes)
+            choose_delete = input('какой список используем? (1 - стандарт, 2 - измена) ', )
+            if choose_delete == '1':
+                new_notes = delete_note(notes)
+            if choose_delete == '2':
+                new_notes = delete_note(new_notes)
             print(new_notes)
         if choose == 4:
-            show_notes(notes, new_notes)
+            choose_show = input('какой список показываем? (1 - стандарт, 2 - измена) ',)
+            if choose_show == '1':
+                show_notes(notes)
+            if choose_show == '2':
+                show_notes(new_notes)
+        if choose == 5:
+            choose_search = input('какой список показываем? (1 - стандарт, 2 - измена) ',)
+            if choose_search == '1':
+                search_notes(notes)
+            if choose_search == '2':
+                search_notes(new_notes)
         continue
 
 menu()
