@@ -82,10 +82,9 @@ def update_note(notes, index, key, new_value):
         new_notes[index][key] = new_value
     return new_notes  # возвращаем новый список с внесенным изменением
 
-notes = create_note()
+notes = [{'username': 'Алексей', 'title': 'Список дел', 'content': 'Купить продукты на неделю', 'status': 'новая', 'created_date': '27-11-2024', 'issue_date': '30-11-2024'}]
 print(notes)
 key, value, new_value = choose_change(notes)
 index = searching(notes, key, value)
 new_notes = update_note(notes, index, key, new_value)
-
-
+print(new_notes)
