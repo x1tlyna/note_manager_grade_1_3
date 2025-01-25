@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 import time
 
-def create_notes(note_number,notes):
+
+def create_notes(note_number, notes):
     number = note_number + 1
     username = input('Введите имя пользователя: ')  # ввод имени пользователя
     title = input('Введите заголовок заметки: ')
@@ -25,9 +26,10 @@ def create_notes(note_number,notes):
         'статус': status,
         'дата создания заметки': created_date,
         'срок выполнения заметки': issue_date
-        }
+    }
     notes.append(note)  # добавляем словарь в список
     return notes, number
+
 
 def show_notes(notes):
     print("ваши заметки:")
@@ -35,103 +37,109 @@ def show_notes(notes):
         print(
             f" Номер заметки: {note['номер заметки']}\n Имя: {note['имя']}\n Заголовок: {note['заголовок']}\n "
             f"Пункт заметки: {note['пункт заметки']}\n Статус: {note['статус']}\n "
-            f"Дата создания: {note['дата создания заметки']}\n " 
+            f"Дата создания: {note['дата создания заметки']}\n "
             f"Срок выполнения до: {note['срок выполнения заметки']}\n ________________________")
         time.sleep(2)
 
+
 def update_note(notes):
     while True:
-        id_key='номер заметки'
-        value_id=int(input('введите номер заметки которую хотите изменить: '))
+        id_key = 'номер заметки'
+        value_id = int(input('введите номер заметки которую хотите изменить: '))
         key = input('введите поле заметки которое хотите поменять: ', )
         new_value = input('введите новое значение: ', )
         new_notes = [notice.copy() for notice in notes]  # создаем дубликат списка для сохранения оригинала
-        for index, notice in enumerate(new_notes):# проверяем, если номер заметки совпадает с требуемым
+        for index, notice in enumerate(new_notes):  # проверяем, если номер заметки совпадает с требуемым
             if notice[id_key] == value_id:
                 new_notes[index][key] = new_value  # обновляем значение имени
                 break  # выходим из цикла после изменения
             else:
-                print ('заметка не найдена, для поиска зайдите в меню обновления еще раз ')
+                print('заметка не найдена, для поиска зайдите в меню обновления еще раз ')
         return new_notes  # Возвращаем обновленный список
+
 
 def delete_note(notes):
     delete_number = int(input('введите номер заметки, которую хотите удалить: ', ))
     new_notes = notes
     for note in notes:
         if delete_number == note['номер заметки']:
-            new_notes.remove(note) #удаляем найденнукю заметку
+            new_notes.remove(note)  # удаляем найденнукю заметку
         else:
             print('заметка не найдена, для удаления зайдите в меню удаления еще раз')
     return new_notes
+
 
 def search_notes(notes):
     searched_notes = []
     keyword = input('Введите ключевое слово (или нажмите ентер): ') or None
     status = input('Введите статус (или нажмите ентер): ') or None
 
-    if status is not None and keyword is None: #поиск заметки при вводе только статуса
+    if status is not None and keyword is None:  # поиск заметки при вводе только статуса
         for note in notes:
             if status.lower() == note.get("статус", "").lower():
                 searched_notes.append(note)
 
-    if keyword is not None and status is None: #поиск заметки при вводе только ключего слова
+    if keyword is not None and status is None:  # поиск заметки при вводе только ключего слова
         for note in notes:
             if any(keyword.lower() in str(value).lower() for key, value in note.items()):
                 searched_notes.append(note)
 
-    if status is not None and keyword is not None: #поиск заметки при вводе только
+    if status is not None and keyword is not None:  # поиск заметки при вводе только
         for note in notes:
             if status.lower() == note.get("статус", "").lower() or any(
                     keyword.lower() in str(value).lower() for key, value in note.items()):
                 searched_notes.append(note)
 
-    if not searched_notes: #если ничего не введено и если по ключу и статусу ничего не нашли
+    if not searched_notes:  # если ничего не введено и если по ключу и статусу ничего не нашли
         searched_notes = 'заметка не найдена, для поиска зайдите в меню поиска еще раз'
 
     return searched_notes
 
+
 def menu():
     note_number = 0
-    notes=[]
+    notes = []
     while True:
         time.sleep(1)
-        print('меню 1 - создать заметку\n 2 - изменить заметку \n 3 - удалить заметку\n 4 - показать заметки\n 5 - найти заметку\n 6 -выйти из меню ')
+        print(
+            'меню 1 - создать заметку\n 2 - изменить заметку \n 3 - удалить заметку\n 4 - показать заметки\n 5 - найти заметку\n 6 -выйти из меню ')
         choose = int(input('выбор меню ', ))
 
-        if choose == 1: #условие входа в меню создания заметки
-            notes, note_number = create_notes(note_number,notes)
-        if choose == 2:#условие входа в меню изменения заметки
+        if choose == 1:  # условие входа в меню создания заметки
+            notes, note_number = create_notes(note_number, notes)
+        if choose == 2:  # условие входа в меню изменения заметки
             choose_update = input('какой список используем? (1 - стандарт, 2 - измена) ', )
             if choose_update == '1':
-                new_notes=update_note(notes)
+                new_notes = update_note(notes)
             if choose_update == '2':
                 new_notes = update_note(new_notes)
             print(new_notes)
-        if choose == 3: #условие входа в меню удаления заметки
+        if choose == 3:  # условие входа в меню удаления заметки
             choose_delete = input('какой список используем? (1 - стандарт, 2 - измена) ', )
             if choose_delete == '1':
                 new_notes = delete_note(notes)
             if choose_delete == '2':
                 new_notes = delete_note(new_notes)
             print(new_notes)
-        if choose == 4:#условие входа в меню показа заметки
-            choose_show = input('какой список показываем? (1 - стандарт, 2 - измена) ',)
+        if choose == 4:  # условие входа в меню показа заметки
+            choose_show = input('какой список показываем? (1 - стандарт, 2 - измена) ', )
             if choose_show == '1':
                 show_notes(notes)
             if choose_show == '2':
                 show_notes(new_notes)
-        if choose == 5:#условие входа в меню нахождения заметки
-            choose_search = input('какой список показываем? (1 - стандарт, 2 - измена) ',)
+        if choose == 5:  # условие входа в меню нахождения заметки
+            choose_search = input('какой список показываем? (1 - стандарт, 2 - измена) ', )
             print(type(choose_search))
             if choose_search == '1':
-                print('по вашим данным мы нашли:',search_notes(notes))
+                print('по вашим данным мы нашли:', search_notes(notes))
                 time.sleep(5)
             if choose_search == '2':
-                print('по вашим данным мы нашли:',search_notes(new_notes))
+                print('по вашим данным мы нашли:', search_notes(new_notes))
                 time.sleep(5)
-        if choose == 6:#условие входа в меню выхода
+        if choose == 6:  # условие входа в меню выхода
             break
         print('вы ввели неправильное значение')
         continue
+
 
 menu()
